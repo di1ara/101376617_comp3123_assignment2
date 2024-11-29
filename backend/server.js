@@ -1,19 +1,30 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
+// backend/server.js
 
-dotenv.config();
-connectDB();
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const authRoutes = require('./routes/authRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 
 const app = express();
+
+// Middlewares
 app.use(cors());
-app.use(express.json()); // To parse JSON body in requests
+app.use(express.json());
 
-app.use('/api', authRoutes); // Use the auth routes
+// Connect to MongoDB
+mongoose.connect(process.env.DB_URI)
+  .then(() => console.log("Connected to the database"))
+  .catch((err) => console.log("Database connection error: ", err));
 
+// Routes
+app.use('/auth',authRoutes);  // Authentication routes (login/signup)
+app.use('/api/employees', employeeRoutes);  // Employee management routes
+
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

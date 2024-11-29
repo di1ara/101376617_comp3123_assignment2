@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Box,
+  Link,
+} from '@mui/material';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +20,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post('http://localhost:5000/auth/login', { email, password });
       localStorage.setItem('token', response.data.token); // Store token in localStorage
       navigate('/employees'); // Redirect to employee list after successful login
     } catch (err) {
@@ -20,27 +29,61 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <input
+    <Container maxWidth="sm" sx={{ marginTop: '4rem' }}>
+      <Typography variant="h4" component="h1" align="center" gutterBottom>
+        Login
+      </Typography>
+      {error && (
+        <Alert severity="error" sx={{ marginBottom: '1rem' }}>
+          {error}
+        </Alert>
+      )}
+      <Box
+        component="form"
+        onSubmit={handleLogin}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}
+      >
+        <TextField
+          label="Email"
           type="email"
-          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          fullWidth
         />
-        <input
+        <TextField
+          label="Password"
           type="password"
-          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          fullWidth
         />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+        >
+          Login
+        </Button>
+      </Box>
+
+      {/* Sign Up Prompt */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <Typography variant="body2">
+          Don't have an account?{' '}
+          <Link href="/signup" variant="body2" color="primary">
+            Sign Up here
+          </Link>
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 
