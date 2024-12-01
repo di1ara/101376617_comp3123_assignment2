@@ -165,9 +165,15 @@ const EmployeeList = () => {
         <DialogContent>
           {selectedEmployee && (
             <Box>
-              <Typography variant="h6">{selectedEmployee.name}</Typography>
-              <Typography variant="body1">Position: {selectedEmployee.position}</Typography>
-              <Typography variant="body1">Email: {selectedEmployee.email}</Typography>
+              <Typography variant="h6" style={{ marginBottom: '10px' }}>
+                {selectedEmployee.name}
+              </Typography>
+              <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
+                <strong>Position:</strong> {selectedEmployee.position}
+              </Typography>
+              <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
+                <strong>Email:</strong> {selectedEmployee.email}
+              </Typography>
             </Box>
           )}
         </DialogContent>
