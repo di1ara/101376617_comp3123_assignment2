@@ -10,8 +10,8 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [employeeToEdit, setEmployeeToEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false); // State for dialog
-  const [selectedEmployee, setSelectedEmployee] = useState(null); // To store selected employee for details
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -33,7 +33,8 @@ const EmployeeList = () => {
     const filteredList = employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.position.toLowerCase().includes(searchQuery.toLowerCase())
+        employee.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        employee.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredEmployees(filteredList);
   }, [searchQuery, employees]);
@@ -61,6 +62,7 @@ const EmployeeList = () => {
       const response = await axios.put(`http://localhost:5000/api/employees/${employee._id}`, {
         name: employee.name,
         position: employee.position,
+        email: employee.email, // Include email in the update
       });
 
       const updatedEmployee = response.data;
@@ -72,13 +74,11 @@ const EmployeeList = () => {
     }
   };
 
-  // Function to open the details dialog
   const handleViewDetails = (employee) => {
     setSelectedEmployee(employee);
     setOpenDetailsDialog(true);
   };
 
-  // Close the details dialog
   const handleCloseDetailsDialog = () => {
     setOpenDetailsDialog(false);
     setSelectedEmployee(null);
@@ -86,9 +86,8 @@ const EmployeeList = () => {
 
   return (
     <div>
-      {/* Search Input */}
       <TextField
-        label="Search by Name or Position"
+        label="Search by Name, Position, or Email"
         variant="outlined"
         fullWidth
         onChange={handleSearchChange}
@@ -111,6 +110,7 @@ const EmployeeList = () => {
                   <Box>
                     <Typography variant="h6">{employee.name}</Typography>
                     <Typography variant="body2" color="textSecondary">{employee.position}</Typography>
+                    <Typography variant="body2" color="textSecondary">{employee.email}</Typography> {/* Display email */}
                   </Box>
                   <Box>
                     <Button
@@ -159,8 +159,7 @@ const EmployeeList = () => {
             <Box>
               <Typography variant="h6">{selectedEmployee.name}</Typography>
               <Typography variant="body1">Position: {selectedEmployee.position}</Typography>
-              <Typography variant="body1">Email: {selectedEmployee.email}</Typography> {/* Replace with actual data */}
-              <Typography variant="body1">Phone: {selectedEmployee.phone}</Typography> {/* Replace with actual data */}
+              <Typography variant="body1">Email: {selectedEmployee.email}</Typography> {/* Display email */}
             </Box>
           )}
         </DialogContent>

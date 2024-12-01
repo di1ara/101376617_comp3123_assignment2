@@ -1,5 +1,3 @@
-// backend/models/employee.js
-
 const mongoose = require('mongoose');
 
 const employeeSchema = new mongoose.Schema({
@@ -11,7 +9,12 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Other employee-related fields can go here
+  email: { 
+    type: String,
+    required: true,  // You can make it required or optional, depending on your requirements
+    unique: true,    // Ensure no two employees have the same email
+  },
+
 });
 
 module.exports = mongoose.model('Employee', employeeSchema);
