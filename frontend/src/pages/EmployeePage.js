@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirecting
 import EmployeeList from '../components/EmployeeList';
 import EmployeeForm from '../components/EmployeeForm';
 import employeeService from '../services/employeeService';
@@ -8,12 +9,14 @@ import {
   Box,
   Paper,
   Divider,
+  Button,
 } from '@mui/material';
 
 function EmployeePage() {
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   // Fetch the employees on page load
   useEffect(() => {
@@ -58,8 +61,6 @@ function EmployeePage() {
       console.error("Error adding or updating employee", error);
     }
   };
-  
-  
 
   // Handle deleting an employee
   const handleDelete = async (id) => {
@@ -74,6 +75,12 @@ function EmployeePage() {
     }
   };
 
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove token from localStorage
+    navigate('/login'); // Redirect to login page
+  };
+
   return (
     <Container maxWidth="md" sx={{ marginTop: '2rem' }}>
       <Paper elevation={3} sx={{ padding: '2rem' }}>
@@ -81,6 +88,14 @@ function EmployeePage() {
           Employee Management
         </Typography>
         <Divider sx={{ marginBottom: '2rem' }} />
+        
+        {/* Logout Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <Button variant="contained" color="secondary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
+        
         <Box sx={{ marginBottom: '2rem' }}>
           <Typography variant="h6" gutterBottom>
             {editingEmployee ? 'Edit Employee' : 'Add New Employee'}
