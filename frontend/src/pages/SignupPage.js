@@ -8,6 +8,7 @@ import {
   Typography,
   Alert,
   Box,
+  Link
 } from '@mui/material';
 
 const SignupPage = () => {
@@ -16,27 +17,35 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(''); // Reset error on each submit
     setSuccessMessage(''); // Reset success message
+
+    // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords don't match");
       return;
     }
+
     try {
+      // Make the signup request
       const response = await axios.post('http://localhost:5000/api/auth/signup', { email, password });
 
-      if (response.status === 200) {
+      // If successful
+      if (response.status === 201) {
         setSuccessMessage('Account created successfully! Please log in.');
-        setTimeout(() => {
-          navigate('/login'); // Redirect to login after a delay
-        }, 2000);
+        
       }
     } catch (err) {
-      setError('Error creating account. Please try again.');
+      if (err.response && err.response.data) {
+        // Handle backend error (e.g., email already exists)
+        setError(err.response.data.message || 'Error creating account. Please try again.');
+      } else {
+        // Generic error if no specific message is returned
+        setError('Error creating account. Please try again.');
+      }
     }
   };
 
@@ -52,7 +61,10 @@ const SignupPage = () => {
       )}
       {successMessage && (
         <Alert severity="success" sx={{ marginBottom: '1rem' }}>
-          {successMessage}
+          {successMessage} <br />
+          <Link href="/login" sx={{ marginTop: '1rem', display: 'block', textDecoration: 'underline' }}>
+            Go to Login Page
+          </Link>
         </Alert>
       )}
       <Box
@@ -103,3 +115,4 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
