@@ -88,8 +88,6 @@ const EmployeeList = () => {
 
   return (
     <div>
-      <h2>Employee List</h2>
-
       {/* Search Input */}
       <TextField
         label="Search by Name or Position"
