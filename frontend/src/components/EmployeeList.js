@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import EmployeeForm from './EmployeeForm';
-import { TextField, CircularProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Box } from '@mui/material';
+import { TextField, CircularProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
+import { Edit, Delete, Visibility } from '@mui/icons-material'; // Importing icons
 import debounce from 'lodash.debounce';
 
 const EmployeeList = () => {
@@ -104,42 +105,49 @@ const EmployeeList = () => {
           {filteredEmployees.length === 0 ? (
             <Typography variant="h6" color="textSecondary">No results found</Typography>
           ) : (
-            <Box>
-              {filteredEmployees.map((employee) => (
-                <Box key={employee._id} display="flex" justifyContent="space-between" alignItems="center" padding="10px" borderBottom="1px solid #ccc">
-                  <Box>
-                    <Typography variant="h6">{employee.name}</Typography>
-                    <Typography variant="body2" color="textSecondary">{employee.position}</Typography>
-                    <Typography variant="body2" color="textSecondary">{employee.email}</Typography> {/* Display email */}
-                  </Box>
-                  <Box>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleEdit(employee)}
-                      style={{ marginRight: '10px' }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => handleDelete(employee._id)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="primary"
-                      onClick={() => handleViewDetails(employee)}
-                      style={{ marginLeft: '10px' }}
-                    >
-                      View
-                    </Button>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Name</strong></TableCell>
+                    <TableCell><strong>Position</strong></TableCell>
+                    <TableCell><strong>Email</strong></TableCell>
+                    <TableCell><strong>Actions</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredEmployees.map((employee) => (
+                    <TableRow key={employee._id}>
+                      <TableCell>{employee.name}</TableCell>
+                      <TableCell>{employee.position}</TableCell>
+                      <TableCell>{employee.email}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => handleEdit(employee)}
+                          color="primary"
+                          style={{ marginRight: '10px' }}
+                        >
+                          <Edit />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDelete(employee._id)}
+                          color="secondary"
+                        >
+                          <Delete />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleViewDetails(employee)}
+                          color="default"
+                          style={{ marginLeft: '10px' }}
+                        >
+                          <Visibility />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </>
       )}
@@ -159,7 +167,7 @@ const EmployeeList = () => {
             <Box>
               <Typography variant="h6">{selectedEmployee.name}</Typography>
               <Typography variant="body1">Position: {selectedEmployee.position}</Typography>
-              <Typography variant="body1">Email: {selectedEmployee.email}</Typography> {/* Display email */}
+              <Typography variant="body1">Email: {selectedEmployee.email}</Typography>
             </Box>
           )}
         </DialogContent>
