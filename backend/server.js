@@ -20,7 +20,7 @@ mongoose.connect(process.env.DB_URI)
   .catch((err) => console.log("Database connection error: ", err));
 
 // Routes
-app.use('/auth',authRoutes);  // Authentication routes (login/signup)
+app.use('/api/auth',authRoutes);  // Authentication routes (login/signup)
 app.use('/api/employees', employeeRoutes);  // Employee management routes
 
 // Start server

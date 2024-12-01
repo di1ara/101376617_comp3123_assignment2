@@ -1,48 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box } from '@mui/material';
 
-function EmployeeForm({ onSubmit, initialData }) {
-  const [form, setForm] = useState(
-    initialData || { name: '', department: '', position: '' }
-  );
+function EmployeeForm({ onSubmit, initialData, resetForm }) {
+  const [name, setName] = useState(initialData ? initialData.name : '');
+  const [position, setPosition] = useState(initialData ? initialData.position : '');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name);
+      setPosition(initialData.position);
+    }
+  }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    const employee = { name, position, _id: initialData ? initialData._id : undefined }; // Include ID for updates
+    onSubmit(employee); // Call onSubmit with the employee data
+
+    // Reset the form fields
+    setName('');
+    setPosition('');
+
+    // Call resetForm to reset success message in the parent component
+    if (resetForm) {
+      resetForm();
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>{initialData ? 'Edit Employee' : 'Add Employee'}</h2>
-      <label>Name:</label>
-      <input
-        type="text"
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        required
-      />
-      <label>Department:</label>
-      <input
-        type="text"
-        name="department"
-        value={form.department}
-        onChange={handleChange}
-        required
-      />
-      <label>Position:</label>
-      <input
-        type="text"
-        name="position"
-        value={form.position}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit">Save</button>
+      <Box sx={{ marginBottom: '1rem' }}>
+        <TextField
+          label="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          fullWidth
+          required
+        />
+      </Box>
+      <Box sx={{ marginBottom: '1rem' }}>
+        <TextField
+          label="Position"
+          value={position}
+          onChange={(e) => setPosition(e.target.value)}
+          fullWidth
+          required
+        />
+      </Box>
+      <Button type="submit" variant="contained">
+        {initialData ? 'Update Employee' : 'Add Employee'}
+      </Button>
     </form>
   );
 }

@@ -13,7 +13,9 @@ import {
 function EmployeePage() {
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
+  // Fetch the employees on page load
   useEffect(() => {
     async function fetchEmployees() {
       const data = await employeeService.getEmployees();
@@ -22,21 +24,54 @@ function EmployeePage() {
     fetchEmployees();
   }, []);
 
+  // Handle adding or updating an employee
   const handleAddOrUpdate = async (employee) => {
-    if (editingEmployee) {
-      await employeeService.updateEmployee(editingEmployee.id, employee);
-    } else {
-      await employeeService.addEmployee(employee);
+    try {
+      if (editingEmployee) {
+        // Update the employee on the server
+        await employeeService.updateEmployee(editingEmployee.id, employee);
+  
+        // Optimistically update the employee in the state
+        setEmployees((prevEmployees) =>
+          prevEmployees.map((emp) =>
+            emp.id === editingEmployee.id ? { ...emp, ...employee } : emp
+          )
+        );
+        setSuccessMessage('Employee updated successfully!');
+      } else {
+        // Add the new employee to the server
+        const newEmployee = await employeeService.addEmployee(employee);
+  
+        // Optimistically add the new employee to the state
+        setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+        setSuccessMessage('Employee added successfully!');
+      }
+  
+      // Clear the editing state
+      setEditingEmployee(null);
+      
+      // Clear the success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    } catch (error) {
+      console.error("Error adding or updating employee", error);
     }
-    const updatedEmployees = await employeeService.getEmployees();
-    setEmployees(updatedEmployees);
-    setEditingEmployee(null);
   };
+  
+  
 
+  // Handle deleting an employee
   const handleDelete = async (id) => {
-    await employeeService.deleteEmployee(id);
-    const updatedEmployees = await employeeService.getEmployees();
-    setEmployees(updatedEmployees);
+    try {
+      await employeeService.deleteEmployee(id);
+      // Remove the employee from the local state
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((employee) => employee.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting employee", error);
+    }
   };
 
   return (
@@ -56,6 +91,10 @@ function EmployeePage() {
           />
         </Box>
         <Divider sx={{ marginY: '2rem' }} />
+        
+        {/* Display Success Message */}
+        {successMessage && <Typography color="success.main" align="center">{successMessage}</Typography>}
+        
         <Typography variant="h6" gutterBottom>
           Employee List
         </Typography>

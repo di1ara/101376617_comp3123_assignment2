@@ -27,7 +27,7 @@ const SignupPage = () => {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/auth/signup', { email, password });
+      const response = await axios.post('http://localhost:5000/api/auth/signup', { email, password });
 
       if (response.status === 200) {
         setSuccessMessage('Account created successfully! Please log in.');
