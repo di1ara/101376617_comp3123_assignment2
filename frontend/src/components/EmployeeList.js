@@ -33,9 +33,10 @@ const EmployeeList = () => {
   useEffect(() => {
     const filteredList = employees.filter(
       (employee) =>
-        employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        `${employee.first_name} ${employee.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
         employee.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.email.toLowerCase().includes(searchQuery.toLowerCase())
+        employee.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        employee.department.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredEmployees(filteredList);
   }, [searchQuery, employees]);
@@ -60,12 +61,7 @@ const EmployeeList = () => {
 
   const handleUpdateEmployee = async (employee) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/employees/${employee._id}`, {
-        name: employee.name,
-        position: employee.position,
-        email: employee.email, // Include email in the update
-      });
-
+      const response = await axios.put(`http://localhost:5000/api/employees/${employee._id}`, employee);
       const updatedEmployee = response.data;
       setEmployees(employees.map(emp => (emp._id === updatedEmployee._id ? updatedEmployee : emp)));
       setFilteredEmployees(filteredEmployees.map(emp => (emp._id === updatedEmployee._id ? updatedEmployee : emp)));
@@ -88,7 +84,7 @@ const EmployeeList = () => {
   return (
     <div>
       <TextField
-        label="Search by Name, Position, or Email"
+        label="Search by Name, Position, Email, or Department"
         variant="outlined"
         fullWidth
         onChange={handleSearchChange}
@@ -105,43 +101,52 @@ const EmployeeList = () => {
           {filteredEmployees.length === 0 ? (
             <Typography variant="h6" color="textSecondary">No results found</Typography>
           ) : (
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><strong>Name</strong></TableCell>
+                    <TableCell><strong>First Name</strong></TableCell>
+                    <TableCell><strong>Last Name</strong></TableCell>
                     <TableCell><strong>Position</strong></TableCell>
-                    <TableCell><strong>Email</strong></TableCell>
+                    <TableCell><strong>Department</strong></TableCell>
+                    <TableCell><strong>Salary</strong></TableCell>
+                    <TableCell><strong>Date of Joining</strong></TableCell>
                     <TableCell><strong>Actions</strong></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredEmployees.map((employee) => (
                     <TableRow key={employee._id}>
-                      <TableCell>{employee.name}</TableCell>
+                      <TableCell>{employee.first_name}</TableCell>
+                      <TableCell>{employee.last_name}</TableCell>
                       <TableCell>{employee.position}</TableCell>
-                      <TableCell>{employee.email}</TableCell>
+                      <TableCell>{employee.department}</TableCell>
+                      <TableCell>{employee.salary}</TableCell>
+                      <TableCell>{new Date(employee.date_of_joining).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <IconButton
-                          onClick={() => handleEdit(employee)}
-                          color="primary"
-                          style={{ marginRight: '10px' }}
-                        >
-                          <Edit />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleDelete(employee._id)}
-                          color="secondary"
-                        >
-                          <Delete />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleViewDetails(employee)}
-                          color="default"
-                          style={{ marginLeft: '10px' }}
-                        >
-                          <Visibility />
-                        </IconButton>
+                        <Box display="flex" justifyContent="center" alignItems="center">
+                          <IconButton
+                            onClick={() => handleEdit(employee)}
+                            color="primary"
+                            style={{ marginRight: '10px', fontSize: '20px' }}
+                          >
+                            <Edit />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleDelete(employee._id)}
+                            color="secondary"
+                            style={{ marginRight: '10px', fontSize: '20px' }}
+                          >
+                            <Delete />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleViewDetails(employee)}
+                            color="default"
+                            style={{ fontSize: '20px' }}
+                          >
+                            <Visibility />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -159,20 +164,28 @@ const EmployeeList = () => {
         />
       )}
 
-      {/* Employee Details Dialog */}
       <Dialog open={openDetailsDialog} onClose={handleCloseDetailsDialog}>
         <DialogTitle>Employee Details</DialogTitle>
         <DialogContent>
           {selectedEmployee && (
             <Box>
               <Typography variant="h6" style={{ marginBottom: '10px' }}>
-                {selectedEmployee.name}
+                {selectedEmployee.first_name} {selectedEmployee.last_name}
               </Typography>
               <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
                 <strong>Position:</strong> {selectedEmployee.position}
               </Typography>
               <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
                 <strong>Email:</strong> {selectedEmployee.email}
+              </Typography>
+              <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
+                <strong>Department:</strong> {selectedEmployee.department}
+              </Typography>
+              <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
+                <strong>Salary:</strong> {selectedEmployee.salary}
+              </Typography>
+              <Typography variant="body1" color="textSecondary" style={{ marginBottom: '10px' }}>
+                <strong>Date of Joining:</strong> {new Date(selectedEmployee.date_of_joining).toLocaleDateString()}
               </Typography>
             </Box>
           )}

@@ -12,9 +12,17 @@ const getEmployees = async (req, res) => {
 
 // Function to add a new employee
 const addEmployee = async (req, res) => {
-  const { name, position, email } = req.body; // Include email here
+  const { first_name, last_name, email, position, salary, date_of_joining, department } = req.body;
   try {
-    const newEmployee = new Employee({ name, position, email }); // Add email to new employee
+    const newEmployee = new Employee({
+      first_name,
+      last_name,
+      email,
+      position,
+      salary,
+      date_of_joining,
+      department
+    });
     await newEmployee.save();
     res.status(201).json(newEmployee); // Return the newly added employee
   } catch (err) {
@@ -25,9 +33,13 @@ const addEmployee = async (req, res) => {
 // Function to update an existing employee
 const updateEmployee = async (req, res) => {
   const { id } = req.params;
-  const { name, position, email } = req.body; // Include email here
+  const { first_name, last_name, email, position, salary, date_of_joining, department } = req.body;
   try {
-    const updatedEmployee = await Employee.findByIdAndUpdate(id, { name, position, email }, { new: true });
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      id,
+      { first_name, last_name, email, position, salary, date_of_joining, department },
+      { new: true }
+    );
     res.json(updatedEmployee); // Return the updated employee data
   } catch (err) {
     res.status(500).json({ message: 'Error updating employee' });

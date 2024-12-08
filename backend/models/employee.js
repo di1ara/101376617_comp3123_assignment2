@@ -1,20 +1,17 @@
 const mongoose = require('mongoose');
 
+// Define the Employee Schema
 const employeeSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: String,
-    required: true,
-  },
-  email: { 
-    type: String,
-    required: true,  // You can make it required or optional, depending on your requirements
-    unique: true,    // Ensure no two employees have the same email
-  },
+  first_name: { type: String, required: true },
+  last_name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  position: { type: String, required: true },
+  salary: { type: Number, required: true },
+  date_of_joining: { type: Date, required: true },
+  department: { type: String, required: true }
+}, { timestamps: true });
 
-});
+// Create the Employee Model
+const Employee = mongoose.model('Employee', employeeSchema);
 
-module.exports = mongoose.model('Employee', employeeSchema);
+module.exports = Employee;
